@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<!-- Include necessary scripts to make other functions work (Firebase, Materialize, Material Icons, etc.) -->
+    <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+  <style>
+    body {
+    	background-color: #e3f2fd;
+  }
+  	#form_center{
+  		margin-left: 25%;
+  	}
+  	#messagesDiv{
+  		margin-left: 40%;
+  	}
+  </style>
+  </head>
+  <body>
+  <div>
+    <h4 class="center-align">Event Guest Attendance Sheet</h4>
+  </div>
+  <div class="row">
+    <form id="form_sheet" class="col s12">
+      <div class="row">
+        <div id="form_center" class="input-field col s6">
+          <i class="material-icons prefix">account_circle</i>
+          <input placeholder="LN, FN MI." id="full_name" type="text" class="validate">
+          <label for="first_name">Full Name</label>
+        </div>
+      </div>
+      <div class="row">
+        <div id="form_center" class="input-field col s6">
+          <i class="material-icons prefix">phone</i>
+          <input placeholder="09XXXXXXXXX" id="contact_number" type="text" length="11" class="validate">
+          <label for="contact_number">Contact Number</label>
+        </div>
+      </div>
+      <div class="row">
+        <div id="form_center" class="input-field col s6">
+        	<i class="material-icons prefix">email</i>
+          <input placeholder="example@example.com" id="email" type="email" class="validate">
+          <label for="email">Email</label>
+        </div>
+      </div>
+      <div class="row">
+        <div id="form_center" class="input-field col s6">
+        	<i class="material-icons prefix">group_work</i>
+          <input placeholder="e.g. Code All Day Society, etc." id="organization" type="text" class="validate">
+          <label for="organization">Organization</label>
+        </div>
+      </div>
+      <div class="row">
+        <div id="form_center" class="input-field col s6">
+	      	<button class="btn waves-effect waves-light" id="submit_button" type="submit" name="action">Submit Information
+		      <i class="material-icons right">send</i>
+		    </button>
+	    </div>
+	  </div>
+    </form>
+  </div>
+  </br></br></br>
+  <div><h5 class="center-align">Stored Data in Firebase: </h5></div>
+    <div id="messagesDiv"></div>
+    <script>
+
+      //connects to firebase with specified URL
+      var myDataRef = new Firebase('https://cmsc128-pa-frias.firebaseio.com/');
+      $('#submit_button').click(function (e) {	//when submit button is clicked, do the following
+          var full_name = $('#full_name').val();
+          var contact_number = $('#contact_number').val();
+          var email = $('#email').val();
+          var organization = $('#organization').val();
+          myDataRef.push({	//saving the data (as list) to the firebase
+          	full_name: full_name,
+          	contact_number: contact_number,
+          	email: email,
+          	organization: organization });
+          $('#full_name').val('');
+          $('#contact_number').val('');
+          $('#email').val('');
+          $('#organization').val('');
+        alert("Information successfully sent. Thank you!");
+      });
+      myDataRef.on('child_added', function(snapshot) {	//displays the data stored in firebase to the .html file
+        var info = snapshot.val();
+        displayInformation(info.full_name, info.contact_number, info.email, info.organization);
+      });
+      function displayInformation(full_name, contact_number, email, organization) {
+        $('<div/>').text('Full Name: ' + full_name).appendTo($('#messagesDiv'));
+        $('<div/>').text('Contact Number: ' + contact_number).appendTo($('#messagesDiv'));
+        $('<div/>').text('Email: ' + email).appendTo($('#messagesDiv'));
+        $('<div/>').text('organization: ' + organization).appendTo($('#messagesDiv'));
+        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      };
+    </script>
+  </body>
+ </html>
